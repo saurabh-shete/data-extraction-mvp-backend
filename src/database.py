@@ -1,10 +1,10 @@
-# src/database.py
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.ext.declarative import declarative_base
 from supabase import create_client, Client
 from src.config import settings
 import logging
+
 Base = declarative_base()
 
 # Initialize variables
@@ -30,13 +30,13 @@ def get_db():
         if settings.environment == "production":
             # Log for production environment
             logging.info("Using Supabase for database connection")
-            return supabase
+            yield supabase  # Yield the Supabase client to comply with FastAPI dependency injection
         else:
             # Log for development environment
             logging.info("Using local PostgreSQL for database connection")
             db = SessionLocal()
             try:
-                yield db
+                yield db  # Yield the database session
             finally:
                 db.close()
     except Exception as e:

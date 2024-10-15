@@ -26,6 +26,13 @@ class Settings(BaseSettings):
     # JWT Secret
     jwt_secret: str
 
+    # Supabase settings
+    database_host: str
+    database_port: int
+    database_name: str
+    database_username: str
+    database_password: str
+    
 
     class Config:
         # Load the .env file from the project root directory

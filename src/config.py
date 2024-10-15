@@ -1,38 +1,33 @@
-# src/config/config.py
 from pydantic_settings import BaseSettings
 
 class Settings(BaseSettings):
-    # Add environment setting
+    # Environment setting
     environment: str
-
-    # Add the flag here (default is False)
-    auto_create_tables: bool = True
 
     # Server settings
     host: str
     port: int
 
-    # Database settings
-    database_url: str
+    # Database settings for local PostgreSQL
+    database_url: str = None
 
-    # AWS settings (optional if needed)
+    # Supabase settings for production
+    database_host: str
+    database_port: int
+    database_name: str
+    database_username: str
+    database_password: str
+
+    # AWS settings (optional)
     aws_access_key_id: str = None
     aws_secret_access_key: str = None
     aws_region: str = None
 
     # openai key
     openai_api_key: str
-
+    
     # JWT Secret
     jwt_secret: str
-
-    # Supabase settings
-    database_host: str
-    database_port: int
-    database_name: str
-    database_username: str
-    database_password: str
-    
 
     class Config:
         # Load the .env file from the project root directory

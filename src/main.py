@@ -1,4 +1,3 @@
-# src/main.py
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from src.config import settings  # Adjusted import for global config

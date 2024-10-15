@@ -4,7 +4,7 @@ from sqlalchemy.orm import Session
 from src.config import settings
 from src.utils.helpers.jwt_helper import decode_access_token
 from src.modules.user.models import User
-from src.dependencies import get_db
+from src.database import get_db
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="auth/login")
 

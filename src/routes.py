@@ -1,5 +1,4 @@
 # src/routes.py
-
 from src.modules.extraction.router import router as extraction_router
 from src.modules.organization.router import router as organization_router
 from src.modules.auth.router import router as auth_router

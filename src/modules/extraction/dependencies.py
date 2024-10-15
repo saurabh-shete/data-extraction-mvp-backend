@@ -1,7 +1,7 @@
 # src/modules/extraction/dependencies.py
 
 from fastapi import Depends, HTTPException
-from src.dependencies import get_db  # Assuming you have this in src/dependencies.py
+from src.database import get_db  # Assuming you have this in src/dependencies.py
 from sqlalchemy.orm import Session
 from src.config import settings
 

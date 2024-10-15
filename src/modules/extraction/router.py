@@ -3,8 +3,7 @@
 from fastapi import APIRouter, Depends, UploadFile, File, HTTPException, status
 from sqlalchemy.orm import Session
 from src.modules.extraction import service
-from src.modules.extraction.dependencies import get_current_user
-from src.dependencies import get_db
+from src.database import get_db
 from src.utils.helpers.response_helper import OK, throw_error
 import logging
 

@@ -22,9 +22,13 @@ class Settings(BaseSettings):
 
     # openai key
     openai_api_key: str
-    
+
     # JWT Secret
     jwt_secret: str
+
+    # Supabase settings
+    supabase_url: str
+    supabase_key: str
 
     class Config:
         # Load the .env file from the project root directory

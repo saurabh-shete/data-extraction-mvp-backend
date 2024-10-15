@@ -9,8 +9,6 @@ __all__ = ["Base", "Organization", "User"]
 
 # Function to create tables based on the flag
 def create_tables():
-    if settings.auto_create_tables:  # Refer to the flag from your settings
-        from src.modules.organization.models import Organization
-        from src.modules.user.models import User
-        # Create all tables
+    if settings.auto_create_tables and settings.environment == "development":
+        # Create tables only in development mode
         Base.metadata.create_all(bind=engine)

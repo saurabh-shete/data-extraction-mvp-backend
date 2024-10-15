@@ -4,7 +4,7 @@ from sqlalchemy.orm import sessionmaker
 from sqlalchemy.ext.declarative import declarative_base
 from supabase import create_client, Client
 from src.config import settings
-
+import logging
 Base = declarative_base()
 
 # Initialize variables
@@ -26,11 +26,19 @@ else:
 
 # Function to get the database session based on the environment
 def get_db():
-    if settings.environment == "production":
-        return supabase
-    else:
-        db = SessionLocal()
-        try:
-            yield db
-        finally:
-            db.close()
+    try:
+        if settings.environment == "production":
+            # Log for production environment
+            logging.info("Using Supabase for database connection")
+            return supabase
+        else:
+            # Log for development environment
+            logging.info("Using local PostgreSQL for database connection")
+            db = SessionLocal()
+            try:
+                yield db
+            finally:
+                db.close()
+    except Exception as e:
+        logging.error(f"Error in get_db: {e}")
+        raise

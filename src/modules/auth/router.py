@@ -27,6 +27,5 @@ def login(user: schemas.UserLogin, db: Session = Depends(get_db)):
     except HTTPException as e:
         return throw_error(status_code=e.status_code, error_message=e.detail)
     except Exception as e:
-        print('aaaaaaaaaaaa')
         print(e)
         return throw_error(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, error_message="Internal Server Error")

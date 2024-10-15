@@ -1,4 +1,3 @@
-# src/main.py
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from src.config import settings  # Adjusted import for global config
@@ -17,13 +16,19 @@ else:
     # Disable docs and redoc in production
     app = FastAPI(docs_url=None, redoc_url=None)
 
+# Define allowed origins for CORS (e.g., frontend origin)
+origins = [
+    "https://de-mvp.onrender.com",  # Your production frontend URL
+    "http://localhost:3000",        # Local development URL (optional)
+]
+
 # Configure CORS
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # You can restrict this based on your needs
+    allow_origins=origins,  # Allow specific origins for security
     allow_credentials=True,
-    allow_methods=["*"],  # You can restrict specific HTTP methods
-    allow_headers=["*"],  # You can restrict specific headers
+    allow_methods=["*"],  # Allow all HTTP methods
+    allow_headers=["*"],  # Allow all headers
 )
 
 # Include all the routes

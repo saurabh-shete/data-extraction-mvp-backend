@@ -1,10 +1,13 @@
-# app/config/config.py
+# src/config/config.py
 from pydantic_settings import BaseSettings
 
 class Settings(BaseSettings):
     # Add environment setting
     environment: str
-    
+
+    # Add the flag here (default is False)
+    auto_create_tables: bool = True
+
     # Server settings
     host: str
     port: int
@@ -12,11 +15,14 @@ class Settings(BaseSettings):
     # Database settings
     database_url: str
 
-    # AWS settings
+    # AWS settings (optional if needed)
     aws_access_key_id: str = None
     aws_secret_access_key: str = None
     aws_region: str = None
 
+    # openai key
+    openai_api_key: str
+    
     # JWT Secret
     jwt_secret: str
 

@@ -58,7 +58,6 @@ SQLAlchemy==2.0.35
 starlette==0.38.6
 storage3==0.8.1
 StrEnum==0.4.15
-supabase==2.9.0
 supafunc==0.6.1
 tqdm==4.66.5
 typing_extensions==4.12.2

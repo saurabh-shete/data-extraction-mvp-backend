@@ -14,7 +14,7 @@ if environment == "development":
     app = FastAPI(debug=True)
 else:
     # Disable docs and redoc in production
-    app = FastAPI(docs_url=None, redoc_url=None,debug=True)
+    app = FastAPI(docs_url=None, redoc_url=None)
 
 # Define allowed origins for CORS (e.g., frontend origin)
 origins = [

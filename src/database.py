@@ -1,3 +1,4 @@
+# src/database.py
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.ext.declarative import declarative_base
@@ -9,6 +10,7 @@ Base = declarative_base()
 # Initialize variables
 SessionLocal = None
 supabase = None
+engine = None  # Initialize engine as None by default
 
 # Conditional logic based on the environment
 if settings.environment == "production":

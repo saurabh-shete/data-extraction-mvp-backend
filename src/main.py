@@ -1,3 +1,4 @@
+# src/main.py
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from src.config import settings  # Adjusted import for global config
@@ -9,6 +10,7 @@ environment = settings.environment
 
 # Initialize FastAPI app
 if environment == "development":
+    # Create tables only in development mode
     create_tables()
     app = FastAPI(debug=True)
 else:
@@ -28,7 +30,7 @@ app.add_middleware(
 for route in routes:
     app.include_router(route)
 
-# Example route (optional)
-@app.get("/",tags=["Root"])
+# Example root route
+@app.get("/", tags=["Root"])
 def root():
     return {"message": "Welcome to the FastAPI application!"}

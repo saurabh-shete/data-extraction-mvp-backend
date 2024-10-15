@@ -1,37 +1,21 @@
-from src.database import SessionLocal, supabase, settings
+from src.database import SessionLocal
 from src.modules.user.models import User
 from src.utils.helpers.encryption_helper import encrypt
 
 def seed_users():
-    if settings.environment == "production":
-        # Use Supabase to insert users
-        users = [
-            {
-                "username": "user1",
-                "email": "user1@example.com",
-                "hashed_password": encrypt("user1")
-            },
-        ]
-        for user in users:
-            supabase.table("tb_user").insert(user).execute()
+    db = SessionLocal()
 
-        print("Seeded users to Supabase successfully.")
+    users = [
+        User(
+            username="user1",
+            email="user1@example.com",
+            hashed_password=encrypt("user1")
+        ),
+    ]
 
-    else:
-        # Use local PostgreSQL database to insert users
-        db = SessionLocal()
+    # Add the users to the database session and commit
+    db.add_all(users)
+    db.commit()
+    db.close()
 
-        users = [
-            User(
-                username="user1",
-                email="user1@example.com",
-                hashed_password=encrypt("user1")
-            ),
-        ]
-
-        # Add the users to the database session and commit
-        db.add_all(users)
-        db.commit()
-        db.close()
-
-        print("Seeded users to local PostgreSQL database successfully.")
+    print("Seeded users to local PostgreSQL database successfully.")

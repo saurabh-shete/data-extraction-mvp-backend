@@ -12,11 +12,11 @@ class Settings(BaseSettings):
     database_url: str = None
 
     # Supabase settings for production
-    database_host: str
-    database_port: int
-    database_name: str
-    database_username: str
-    database_password: str
+    database_host: str = None
+    database_port: int = None
+    database_name: str = None
+    database_username: str = None
+    database_password: str = None
 
     # AWS settings (optional)
     aws_access_key_id: str = None

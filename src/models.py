@@ -12,6 +12,6 @@ __all__ = ["Base", "User"]
 
 # Function to create tables based on the environment
 def create_tables():
-    if settings.auto_create_tables and settings.environment == "development":
+    if settings.environment == "development":
         # Create tables only in development mode (local PostgreSQL)
         Base.metadata.create_all(bind=engine)

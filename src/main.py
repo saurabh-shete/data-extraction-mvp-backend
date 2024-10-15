@@ -19,7 +19,7 @@ else:
 # Define allowed origins for CORS (e.g., frontend origin)
 origins = [
     "https://de-mvp.onrender.com",  # Your production frontend URL
-    "http://localhost:3000",        # Local development URL (optional)
+    "http://127.0.0.1:5173",        # Local development URL (optional)
 ]
 
 # Configure CORS

@@ -1,5 +1,3 @@
-# src/modules/extraction/service.py
-
 from fastapi import UploadFile, HTTPException, status
 from src.modules.extraction.constants import ALLOWED_FILE_TYPES
 from src.modules.extraction.dependencies import get_openai_client
@@ -9,6 +7,7 @@ import os
 import logging
 import openai
 from openai import OpenAI
+import json
 
 async def process_file(file: UploadFile):
     # Check if the file type is allowed
@@ -47,16 +46,9 @@ async def process_file(file: UploadFile):
             except Exception as e:
                 logging.exception("Error extracting text from PDF")
                 raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Error extracting text from PDF.")
-        elif file.content_type.startswith('image/'):
-            # Extract text from image using OCR
-            try:
-                from PIL import Image
-                import pytesseract
-
-                extracted_text = pytesseract.image_to_string(Image.open(file_path))
-            except Exception as e:
-                logging.exception("Error extracting text from image")
-                raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Error extracting text from image.")
+        # Remove or comment out the image extraction part
+        # elif file.content_type.startswith('image/'):
+        #     raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Image extraction is temporarily disabled.")
         else:
             raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Unsupported file type.")
     finally:
@@ -218,7 +210,6 @@ async def process_file(file: UploadFile):
                 raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Could not find JSON content between markers.")
 
             # Parse the JSON content
-            import json
             assistant_response_data = json.loads(json_content.strip())
         except json.JSONDecodeError as e:
             logging.exception("Failed to parse assistant's response as JSON")

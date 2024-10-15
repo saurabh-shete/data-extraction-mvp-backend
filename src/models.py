@@ -6,7 +6,6 @@ if settings.environment != "production":
     from src.database import engine
 
 # Import models here
-from src.modules.organization.models import Organization 
 from src.modules.user.models import User  
 __all__ = ["Base", "User"]
 

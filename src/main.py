@@ -1,8 +1,10 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, BackgroundTasks
 from fastapi.middleware.cors import CORSMiddleware
 from src.config import settings  # Adjusted import for global config
 from src.routes import routes  # Import the routes list
 from src.models import create_tables  # Import the function to create tables
+import httpx
+import asyncio
 
 # Get the environment from the settings
 environment = settings.environment
@@ -39,3 +41,25 @@ for route in routes:
 @app.get("/", tags=["Root"])
 def root():
     return {"message": "Welcome to the FastAPI application!"}
+
+# Background task to ping the server itself
+async def ping_self():
+    while True:
+        try:
+            async with httpx.AsyncClient() as client:
+                response = await client.get("https://data-extraction-mvp-backend.onrender.com/")
+                if response.status_code == 200:
+                    print("Ping successful.")
+                else:
+                    print(f"Ping failed with status code: {response.status_code}")
+        except Exception as e:
+            print(f"Error pinging self: {e}")
+        # Wait for 14 minutes 50 seconds before the next ping
+        await asyncio.sleep(14 * 60 + 50)
+
+# Function to start background tasks in production
+@app.on_event("startup")
+async def startup_event():
+    if environment == "production":
+        # Start the self-ping task only in production
+        asyncio.create_task(ping_self())

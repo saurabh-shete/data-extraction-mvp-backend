@@ -10,7 +10,7 @@ Base = declarative_base()
 SessionLocal = None
 engine = None
 
-print(f"Using {settings.environment} environment")
+logging.info(f"Using {settings.environment} environment")
 # Conditional logic based on the environment
 if settings.environment == "production":
     SUPABASE_URL = f"postgresql://{settings.database_username}:{settings.database_password}@{settings.database_host}:{settings.database_port}/{settings.database_name}"

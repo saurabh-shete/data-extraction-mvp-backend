@@ -1,13 +1,16 @@
-from fastapi import UploadFile, HTTPException, status
-from src.modules.extraction.constants import ALLOWED_FILE_TYPES
-from src.modules.extraction.dependencies import get_openai_client
+import pdfplumber
+import openai
+from openai import OpenAI
 import aiofiles
 import tempfile
 import os
 import logging
-import openai
-from openai import OpenAI
 import json
+import time
+from fastapi import UploadFile, HTTPException, status
+from src.modules.extraction.constants import ALLOWED_FILE_TYPES
+from src.modules.extraction.dependencies import get_openai_client
+
 
 async def process_file(file: UploadFile):
     # Check if the file type is allowed
@@ -34,21 +37,13 @@ async def process_file(file: UploadFile):
     try:
         # Determine the file type and extract text accordingly
         if file.content_type == 'application/pdf':
-            # Extract text from PDF using PyPDF2
-            import PyPDF2
-
+            # Use pdfplumber for better PDF extraction
             try:
-                with open(file_path, 'rb') as pdf_file:
-                    reader = PyPDF2.PdfReader(pdf_file)
-                    for page_num in range(len(reader.pages)):
-                        page = reader.pages[page_num]
-                        extracted_text += page.extract_text()
+                with pdfplumber.open(file_path) as pdf:
+                    extracted_text = ''.join([page.extract_text() for page in pdf.pages if page.extract_text()])
             except Exception as e:
                 logging.exception("Error extracting text from PDF")
                 raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Error extracting text from PDF.")
-        # Remove or comment out the image extraction part
-        # elif file.content_type.startswith('image/'):
-        #     raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Image extraction is temporarily disabled.")
         else:
             raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Unsupported file type.")
     finally:
@@ -151,18 +146,26 @@ async def process_file(file: UploadFile):
         logging.exception("Error adding message to thread")
         raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Error adding message to thread.")
 
-    # Run the assistant
+    # Run the assistant with retry logic
     try:
-        run = client.beta.threads.runs.create(
-            thread_id=thread.id,
-            assistant_id=assistant.id
-        )
+        for attempt in range(3):  # Retry 3 times
+            try:
+                run = client.beta.threads.runs.create(
+                    thread_id=thread.id,
+                    assistant_id=assistant.id
+                )
+                break  # Success, exit the loop
+            except Exception as e:
+                logging.error(f"Error running assistant attempt {attempt + 1}: {str(e)}")
+                time.sleep(2)  # Wait and retry
+        else:
+            raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="OpenAI request failed after retries.")
+
     except Exception as e:
         logging.exception("Error running assistant")
         raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Error running assistant.")
 
-    # Wait for the run to complete
-    import time
+    # Wait for the run to complete with timeout logic
     start_time = time.time()
     timeout = 120  # seconds
     while run.status != 'completed':
@@ -206,7 +209,7 @@ async def process_file(file: UploadFile):
             if len(parts) >= 3:
                 json_content = parts[1]
             else:
-                logging.error("Could not find JSON content between markers.")
+                logging.error(f"Invalid assistant response format: {assistant_response}")
                 raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Could not find JSON content between markers.")
 
             # Parse the JSON content
@@ -223,3 +226,4 @@ async def process_file(file: UploadFile):
         raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Error retrieving assistant response.")
 
     return assistant_response_data
+

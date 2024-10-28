@@ -15,6 +15,7 @@ import platform
 
 # Define the base directory relative to the current file
 BASE_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), '../../../'))
+print(os.path.dirname(__file__))
 print(platform.system())
 print(BASE_DIR)
 # Set Tesseract paths only if the OS is Linux

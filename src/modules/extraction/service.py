@@ -12,11 +12,19 @@ from io import BytesIO
 from src.modules.extraction.constants import ALLOWED_FILE_TYPES
 from src.modules.extraction.dependencies import get_openai_client
 
+# Define the base directory relative to the current file
+BASE_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), '../../../'))
+
+# Set the Tesseract binary path relative to BASE_DIR
+pytesseract.pytesseract.tesseract_cmd = os.path.join(BASE_DIR, 'tesseract_bin/tesseract')
+
+# Define tessdata directory path to pass directly in the config
+tessdata_dir = os.path.join(BASE_DIR, 'tesseract_bin/tessdata')
+
 async def process_file(file: UploadFile):
     # Check if the file type is allowed
     if file.content_type not in ALLOWED_FILE_TYPES:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Unsupported file type.")
-    
     extracted_text = ""
 
     # Process PDF files
@@ -33,19 +41,18 @@ async def process_file(file: UploadFile):
             raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Error processing PDF with pdfplumber.")
     
     # Process Image files
-    elif file.content_type in ['image/png','image/jpeg','image/jpg','image/gif']:
+    elif file.content_type in ['image/png', 'image/jpeg', 'image/jpg', 'image/gif']:
         try:
             # Read image content
             content = await file.read()
             image = Image.open(BytesIO(content))
-            extracted_text = pytesseract.image_to_string(image, lang="eng")  # Extract text from image
+            # Pass tessdata directory directly in the config parameter
+            extracted_text = pytesseract.image_to_string(image, lang="eng", config=f'--tessdata-dir "{tessdata_dir}"')
         except Exception as e:
             logging.exception("Error processing image with Tesseract")
             raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Error processing image with Tesseract.")
-    
     else:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Unsupported file type.")
-
 
     print(extracted_text)
     # Combine the instructions with the extracted text for context

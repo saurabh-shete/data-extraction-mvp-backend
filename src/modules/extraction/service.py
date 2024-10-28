@@ -15,12 +15,13 @@ import platform
 
 # Define the base directory relative to the current file
 BASE_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), '../../../'))
-
+print(platform.system())
 # Set Tesseract paths only if the OS is Linux
 if platform.system() == "Linux":
     # Use the custom Tesseract binary and tessdata path on Linux
     pytesseract.pytesseract.tesseract_cmd = os.path.join(BASE_DIR, 'tesseract_bin/tesseract')
     tessdata_dir = os.path.join(BASE_DIR, 'tesseract_bin/tessdata')
+    print(tessdata_dir)
 else:
     # For non-Linux, use system defaults (no custom paths)
     tessdata_dir = None

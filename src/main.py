@@ -5,10 +5,10 @@ from src.routes import routes  # Import the routes list
 from src.models import create_tables  # Import the function to create tables
 import httpx
 import asyncio
-
+import os
 # Get the environment from the settings
 environment = settings.environment
-
+print(os.path.dirname(__file__),"main.py")
 # Initialize FastAPI app
 if environment == "development":
     # Create tables only in development mode

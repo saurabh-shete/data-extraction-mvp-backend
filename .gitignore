@@ -166,3 +166,4 @@ node_modules/
 .*.swp
 .sass-cache/
 doc.pages
+alembic.ini

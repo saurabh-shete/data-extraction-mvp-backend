@@ -29,6 +29,8 @@ class Settings(BaseSettings):
     # JWT Secret
     jwt_secret: str
 
+    # free ocr api key
+    free_ocr_api_key: str
     class Config:
         # Load the .env file from the project root directory
         env_file = ".env"

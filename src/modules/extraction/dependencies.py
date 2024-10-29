@@ -9,6 +9,9 @@ def get_current_user():
     # Implement authentication dependency if required
     pass
 
+def get_free_ocr_api_key():
+    return settings.free_ocr_api_key
+
 def get_openai_client():
     class OpenAIClient:
         api_key = settings.openai_api_key

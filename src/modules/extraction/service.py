@@ -134,11 +134,11 @@ from PIL import Image
 import pdfplumber
 from io import BytesIO
 from src.modules.extraction.constants import ALLOWED_FILE_TYPES
-from src.modules.extraction.dependencies import get_openai_client
+from src.modules.extraction.dependencies import get_openai_client, get_free_ocr_api_key
 import requests
 
 # Function to call the OCR.space API for image processing
-def ocr_space_file_api(file_content, api_key='K81253029488957', language='eng'):
+def ocr_space_file_api(file_content, api_key, language='eng'):
     payload = {
         'isOverlayRequired': False,
         'apikey': api_key,
@@ -176,7 +176,7 @@ async def process_file(file: UploadFile):
     elif file.content_type in ['image/png', 'image/jpeg', 'image/jpg', 'image/gif']:
         try:
             content = await file.read()
-            extracted_text = ocr_space_file_api(file_content=BytesIO(content), api_key="K81253029488957", language="eng")
+            extracted_text = ocr_space_file_api(file_content=BytesIO(content), api_key=get_free_ocr_api_key(), language="eng")
             print("OCR API response:", extracted_text)  # Print API response to view format
         except Exception as e:
             logging.exception("Error processing image with OCR.space API")

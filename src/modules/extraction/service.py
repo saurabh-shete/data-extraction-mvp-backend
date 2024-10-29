@@ -11,22 +11,8 @@ import pdfplumber
 from io import BytesIO
 from src.modules.extraction.constants import ALLOWED_FILE_TYPES
 from src.modules.extraction.dependencies import get_openai_client
-import platform
 
-# Define the base directory relative to the current file
-BASE_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), '../../../'))
-print(os.path.dirname(__file__))
-print(platform.system())
-print(BASE_DIR)
-# Set Tesseract paths only if the OS is Linux
-if platform.system() == "Linux":
-    # Use the custom Tesseract binary and tessdata path on Linux
-    pytesseract.pytesseract.tesseract_cmd = os.path.join(BASE_DIR, 'tesseract_bin/tesseract')
-    tessdata_dir = os.path.join(BASE_DIR, 'tesseract_bin/tessdata')
-    print(tessdata_dir)
-else:
-    # For non-Linux, use system defaults (no custom paths)
-    tessdata_dir = None
+# No need to define custom Tesseract paths; Docker will use system defaults
 
 async def process_file(file: UploadFile):
     # Check if the file type is allowed
@@ -53,9 +39,8 @@ async def process_file(file: UploadFile):
             # Read image content
             content = await file.read()
             image = Image.open(BytesIO(content))
-            # Pass tessdata directory in the config parameter only if it's defined
-            config = f'--tessdata-dir "{tessdata_dir}"' if tessdata_dir else ""
-            extracted_text = pytesseract.image_to_string(image, lang="eng", config=config)
+            # Use Tesseract OCR with default system configuration
+            extracted_text = pytesseract.image_to_string(image, lang="eng")
         except Exception as e:
             logging.exception("Error processing image with Tesseract")
             raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Error processing image with Tesseract.")
